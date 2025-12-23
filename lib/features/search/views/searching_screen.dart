@@ -95,9 +95,8 @@ class _SearchingScreenState extends State<SearchingScreen> {
           children: <Widget>[
             // Search Bar
             CustomTextField(
+              labelText: 'Type Medicine Name',
               controller: _medicineController,
-              hintText: 'Enter medicine name to search...',
-              prefixIcon: Icons.search,
             ),
             const SizedBox(height: 30),
 
@@ -181,7 +180,7 @@ Widget _buildBottomNavBar(BuildContext context) {
     onTap: (index) {
       if (index == 0) return; // Already on Home
       if (index == 3) {
-        Navigator.pushNamed(context, AppRoutes.profile);
+        Navigator.pushNamed(context, AppRoutes.userProfile);
       }
       // Implement navigation for Tracker (1) and AI (2) when screens exist
     },

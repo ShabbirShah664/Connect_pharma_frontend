@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/custom_buttons.dart';
+import '../../../features/chat/views/chat_screen.dart';
 
 class SearchResultsPage extends StatelessWidget {
   const SearchResultsPage({super.key});
@@ -75,7 +76,7 @@ class SearchResultsPage extends StatelessWidget {
                   isLimited: result['limited'],
                   onContact: () {
                     // Pass pharmacy name to chat screen
-                    Navigator.pushNamed(context, AppRoutes.chat, arguments: {'pharmacistName': result['name']});
+                    Navigator.pushNamed(context, AppRoutes.chatScreen, arguments: {'pharmacistName': result['name']});
                   },
                   onDeliver: () {
                     // Placeholder for initiating delivery
@@ -160,7 +161,7 @@ class _PharmacyResultCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.success,
+                    color: AppColors.primary,
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: const Text('Available YES', style: TextStyle(color: AppColors.lightText, fontSize: 12)),

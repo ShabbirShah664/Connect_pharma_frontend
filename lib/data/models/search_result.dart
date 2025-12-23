@@ -1,32 +1,23 @@
-// lib/models/search_result.dart
-
 class SearchResult {
-  final String id;
-  final String name;
-  final String distance; // String because it's already formatted like "1.5" km
-  final String stock;
-  final bool isLimited;
+  final String pharmacyId;
+  final String pharmacyName;
+  final String medicineName;
+  final double distance;
 
   SearchResult({
-    required this.id,
-    required this.name,
+    required this.pharmacyId,
+    required this.pharmacyName,
+    required this.medicineName,
     required this.distance,
-    required this.stock,
-    required this.isLimited,
   });
 
-  // Factory constructor to create a SearchResult object from the JSON response
   factory SearchResult.fromJson(Map<String, dynamic> json) {
     return SearchResult(
-      // Ensure data types match the backend's JSON structure (searchService.js)
-      id: json['id'] as String,
-      name: json['name'] as String,
-      distance: json['distance'] as String,
-      stock: json['stock'] as String,
-      isLimited: json['isLimited'] as bool,
+      pharmacyId: json['pharmacyId'] ?? '',
+      pharmacyName: json['pharmacyName'] ?? 'Unknown Pharmacy',
+      medicineName: json['medicineName'] ?? 'Medicine',
+      // Safely convert distance to double even if it comes as int
+      distance: (json['distance'] as num).toDouble(),
     );
   }
-
-  // Helper method for display
-  String get distanceDisplay => '$distance km';
 }

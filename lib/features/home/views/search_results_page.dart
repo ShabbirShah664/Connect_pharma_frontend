@@ -1,37 +1,20 @@
-// lib/features/home/views/search_results_page.dart
-
 import 'package:flutter/material.dart';
-import '../../../data/models/search_result.dart'; 
+import 'package:flutter_application_1/data/models/search_result.dart';
 
 class SearchResultsPage extends StatelessWidget {
-  // FIX 6: Using 'results' as the named parameter to match AppRoutes.
-  final List<SearchResult> results; 
+  final String query;
 
-  // FIX 6: Updated constructor
-  const SearchResultsPage({super.key, required this.results}); 
+  const SearchResultsPage({super.key, required this.query, required List<SearchResult> results});
 
   @override
   Widget build(BuildContext context) {
+    // This is a placeholder. Usually, you'd use a FutureBuilder here 
+    // to call SearchService.searchPharmacies(query)
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Search Results'),
+      appBar: AppBar(title: Text('Results for "$query"')),
+      body: const Center(
+        child: Text('Search results logic goes here'),
       ),
-      body: results.isEmpty
-          ? const Center(child: Text('No results found.'))
-          : ListView.builder(
-              itemCount: results.length,
-              itemBuilder: (context, index) {
-                final result = results[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                  child: ListTile(
-                    title: Text(result.pharmacyName),
-                    subtitle: Text('${result.medicineName} available.'),
-                    trailing: Text('${result.distance.toStringAsFixed(2)} km'),
-                  ),
-                );
-              },
-            ),
     );
   }
 }

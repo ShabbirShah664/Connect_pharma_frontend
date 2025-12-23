@@ -71,14 +71,14 @@ class AppTheme {
       hintStyle: const TextStyle(color: AppColors.lightText),
     ),
     
-     FIX: CardTheme must be const or explicitly CardThemeData
+     /*FIX: CardTheme must be const or explicitly CardThemeData
     cardTheme: const CardTheme(
       color: AppColors.white,
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-    ),
+    ),*/
 
     scaffoldBackgroundColor: AppColors.background,
     useMaterial3: true,
