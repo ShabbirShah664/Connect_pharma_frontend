@@ -1,30 +1,41 @@
-// lib/core/services/auth_api_service.dart
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-import '../constants.dart';
+import 'package:flutter_application_1/core/services/api_constants.dart';
 
 class AuthApiService {
-  // Method to get JWT token from shared preferences
-  Future<String?> _getAuthToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(kAuthTokenKey);
-  }
-
-  // FIX: Public method to get headers, resolving _getHeaders errors
-  Future<Map<String, String>> getHeaders() async { 
-    final token = await _getAuthToken();
+  // Added this to fix the 'getHeaders' undefined error
+  Future<Map<String, String>> getHeaders() async {
+    // For now, return basic headers. 
+    // Later, you can add 'Authorization': 'Bearer $token' here
     return {
       'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
+      'Accept': 'application/json',
     };
   }
-  
-  // Placeholder methods (implement your actual API calls here)
-  Future<Map<String, dynamic>> login({required String email, required String password}) async {
-    // ... actual http call logic ...
-    await Future.delayed(const Duration(seconds: 1)); // Placeholder delay
-    return {'success': true, 'message': 'Login Successful', 'token': 'dummy_jwt_token'};
+
+  Future<void> registerPharmacist(Map<String, dynamic> data) async {
+    final response = await http.post(
+      Uri.parse('${ApiConstants.BASE_URL}${ApiConstants.AUTH_SIGNUP}'),
+      headers: await getHeaders(),
+      body: json.encode(data),
+    );
+
+    if (response.statusCode != 201) {
+      throw Exception(json.decode(response.body)['message'] ?? 'Signup failed');
+    }
+  }
+
+  Future<Map<String, dynamic>> login(String email, String password) async {
+    final response = await http.post(
+      Uri.parse('${ApiConstants.BASE_URL}${ApiConstants.AUTH_LOGIN}'),
+      headers: await getHeaders(),
+      body: json.encode({'email': email, 'password': password}),
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception(json.decode(response.body)['message'] ?? 'Login failed');
+    }
   }
 }
