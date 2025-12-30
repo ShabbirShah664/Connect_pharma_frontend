@@ -3,47 +3,46 @@
 class RequestModel {
   final String id;
   final String userId;
-  final String medicineDetails;
-  final String status; // 'pending', 'accepted', 'rejected'
+  final String? userName;
+  final Map<String, dynamic> medicineDetails;
+  final String status;
   final Map<String, dynamic> deliveryLocation;
-  final String? pharmacistId;
-  final double? estimatedPrice;
+  final String? prescriptionImageUrl;
+  final List<dynamic>? responses; // List of offers/responses
   final DateTime? createdAt;
 
   RequestModel({
     required this.id,
     required this.userId,
+    this.userName,
     required this.medicineDetails,
     required this.status,
     required this.deliveryLocation,
-    this.pharmacistId,
-    this.estimatedPrice,
+    this.prescriptionImageUrl,
+    this.responses,
     this.createdAt,
   });
 
-  // Convert JSON from the Backend (Node.js API) to this Dart Model
   factory RequestModel.fromJson(Map<String, dynamic> json) {
     return RequestModel(
-      id: json['id'] ?? '',
-      userId: json['userId'] ?? '',
-      medicineDetails: json['medicineDetails'] ?? '',
-      status: json['status'] ?? 'pending',
-      // Handles the nested location object { lat, lng, address }
-      deliveryLocation: json['deliveryLocation'] != null 
+      id: json['id']?.toString() ?? '',
+      userId: json['userId']?.toString() ?? '',
+      userName: json['userName']?.toString(),
+      medicineDetails: json['medicineDetails'] is Map 
+          ? Map<String, dynamic>.from(json['medicineDetails'])
+          : {'name': json['medicineDetails'].toString()},
+      status: json['status']?.toString() ?? 'pending',
+      deliveryLocation: json['deliveryLocation'] is Map 
           ? Map<String, dynamic>.from(json['deliveryLocation']) 
-          : {},
-      pharmacistId: json['pharmacistId'],
-      // Handles price conversion safely from int or double
-      estimatedPrice: json['estimatedPrice'] != null 
-          ? (json['estimatedPrice'] as num).toDouble() 
-          : null,
+          : {'address': json['deliveryLocation']?.toString() ?? ''},
+      prescriptionImageUrl: json['prescriptionImageUrl']?.toString(),
+      responses: (json['responses'] is List) ? List<dynamic>.from(json['responses']) : [],
       createdAt: json['createdAt'] != null 
-          ? DateTime.parse(json['createdAt']) 
+          ? DateTime.tryParse(json['createdAt'].toString()) 
           : null,
     );
   }
 
-  // Convert this Model to JSON (Useful if you send data back to the API)
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -51,8 +50,8 @@ class RequestModel {
       'medicineDetails': medicineDetails,
       'status': status,
       'deliveryLocation': deliveryLocation,
-      'pharmacistId': pharmacistId,
-      'estimatedPrice': estimatedPrice,
+      'prescriptionImageUrl': prescriptionImageUrl,
+      'responses': responses,
     };
   }
 }

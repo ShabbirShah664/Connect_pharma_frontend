@@ -15,7 +15,19 @@ class AuthApiService {
 
   Future<void> registerPharmacist(Map<String, dynamic> data) async {
     final response = await http.post(
-      Uri.parse('${ApiConstants.BASE_URL}${ApiConstants.AUTH_SIGNUP}'),
+      Uri.parse('${ApiConstants.BASE_URL}${ApiConstants.AUTH_SIGNUP_PHARMACIST}'),
+      headers: await getHeaders(),
+      body: json.encode(data),
+    );
+
+    if (response.statusCode != 201) {
+      throw Exception(json.decode(response.body)['message'] ?? 'Signup failed');
+    }
+  }
+
+  Future<void> registerUser(Map<String, dynamic> data) async {
+    final response = await http.post(
+      Uri.parse('${ApiConstants.BASE_URL}${ApiConstants.AUTH_SIGNUP_USER}'),
       headers: await getHeaders(),
       body: json.encode(data),
     );

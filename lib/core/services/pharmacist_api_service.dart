@@ -8,11 +8,9 @@ import 'package:flutter_application_1/data/models/pharmacist.dart';
 class PharmacistApiService {
  
  
-  final String _baseUrl = 'http://localhost:3000/api';
-
   // Primary login method used throughout the app
   Future<Pharmacist> login(String email, String password) async {
-    final uri = Uri.parse('$_baseUrl/pharmacists/login');
+    final uri = Uri.parse('${ApiConstants.BASE_URL}${ApiConstants.AUTH_LOGIN}');
 
     final response = await http.post(
       uri,
@@ -66,22 +64,23 @@ class PharmacistApiService {
   
   
 
-  // Update request status (Accept/Reject) and provide a price quote
-  static Future<void> updateRequestStatus(String token, String requestId, String status, double quote) async {
-    final response = await http.put(
+  // Submit a response (alternative/availability) to a request
+  static Future<void> respondToRequest(String token, String requestId, String status, String? alternativeMedicine, String? note) async {
+    final response = await http.post(
       Uri.parse('${ApiConstants.BASE_URL}/requests/$requestId/respond'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
-        'responseStatus': status,
-        'estimatedPrice': quote,
+        'status': status,
+        'alternativeMedicine': alternativeMedicine,
+        'note': note,
       }),
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to update request status');
+      throw Exception('Failed to submit response');
     }
   }
 }

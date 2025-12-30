@@ -38,7 +38,7 @@ class _PharmacistLoginPageState extends State<PharmacistLoginPage> {
       final password = _passwordController.text;
 
       // Call the dedicated pharmacist login service
-      final Pharmacist pharmacist = await _apiService.pharmacist_login(email, password);
+      final Pharmacist pharmacist = await _apiService.login(email, password);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

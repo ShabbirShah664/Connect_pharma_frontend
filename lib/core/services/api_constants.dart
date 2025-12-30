@@ -13,11 +13,12 @@ const String BASE_URL = 'http://10.0.2.2:3000/api';// lib/core/utils/api_constan
 class ApiConstants {
   // 1. Base URL - Use 10.0.2.2 for Android Emulator, localhost for iOS/Web
   // Ensure there is NO trailing slash here to avoid // in your URLs
-  static const String BASE_URL = 'http://10.0.2.2:5000/api';
+  static const String BASE_URL = 'http://10.0.2.2:3000/api';
 
   // 2. Authentication Endpoints
   static const String AUTH_LOGIN = '/auth/login';
-  static const String AUTH_SIGNUP = '/auth/signup';
+  static const String AUTH_SIGNUP_USER = '/auth/user/signup';
+  static const String AUTH_SIGNUP_PHARMACIST = '/auth/pharmacist/signup';
 
   // 3. User & Profile Endpoints
   static const String USER_PROFILE = '/profile';
@@ -34,4 +35,6 @@ class ApiConstants {
   // REPLACE 'YOUR_MAPBOX_TOKEN' with your actual secret key from Mapbox
   static const String MAPBOX_ACCESS_TOKEN = 'YOUR_MAPBOX_TOKEN_HERE';
   static const String MAPBOX_STYLE = 'mapbox://styles/mapbox/streets-v11';
+  
+  static const String AUTH_TOKEN_KEY = 'auth_token';
 }

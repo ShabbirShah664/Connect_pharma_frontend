@@ -36,41 +36,59 @@ class _SearchingScreenState extends State<SearchingScreen> {
     });
   }
 
-  void _handleFindMedicine() {
-    // --- VALIDATION LOGIC ---
-    // The request can be generated with Medicine Name OR uploaded Prescription
+  void _handleFindMedicine() async {
     bool isMedicineNameEntered = _medicineController.text.trim().isNotEmpty;
-    bool isPrescriptionUploaded = false; // Mocking a check for now
 
-    if (!isMedicineNameEntered && !isPrescriptionUploaded) {
-      // Show Alert Box
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Empty Fields'),
-          content: const Text(
-            'The entry fields are empty. Please enter a medicine name or upload a prescription.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK', style: TextStyle(color: AppColors.primary)),
-            ),
-          ],
-        ),
+    if (!isMedicineNameEntered) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a medicine name.')),
       );
       return;
     }
 
-    // --- SEARCH LOGIC INTEGRATION POINT ---
-    // 1. Display a loading screen or animation (Indrive-style waiting).
-    // 2. Send the request to Node.js backend: /search/medicine.
-    // 3. The backend handles the 2km -> 5km -> 10km radius expansion and notifies pharmacists.
-    // 4. Once responses start coming in, navigate to the search results page.
-    print('Search initiated for: ${_medicineController.text} at $_currentLocation');
+    // Mocking Image Upload for now
+    String? mockImageUrl; 
+    
+    try {
+      // 1. Get Token
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString(ApiConstants.AUTH_TOKEN_KEY); 
 
-    // Placeholder: Navigate to results page instantly with mock data
-    Navigator.pushNamed(context, AppRoutes.searchResults);
+      if (token == null) {
+        throw Exception('User authentication error. Please login again.');
+      }
+
+      // 2. Prepare Data
+      final requestData = {
+        'medicineDetails': {
+          'name': _medicineController.text.trim(),
+          'description': 'User request from app',
+        },
+        'deliveryLocation': {
+          'address': _currentLocation,
+          'lat': 31.5204, // Mock coordinates for Lahore
+          'lng': 74.3587,
+        },
+        'preferredTime': 'ASAP',
+        'prescriptionImageUrl': mockImageUrl, 
+      };
+
+      // 3. Call API
+      await UserApiService.submitMedicineRequest(token, requestData);
+
+      if (mounted) {
+        // 4. Navigate to Status Screen (Indrive-style waiting)
+        // We will create this screen next. For now, using a placeholder navigation.
+        Navigator.pushNamed(context, AppRoutes.requestStatus); 
+      }
+
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -94,9 +112,20 @@ class _SearchingScreenState extends State<SearchingScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             // Search Bar
-            CustomTextField(
-              labelText: 'Type Medicine Name',
+            // Search Bar
+            TextFormField(
               controller: _medicineController,
+              decoration: InputDecoration(
+                labelText: 'Type Medicine Name',
+                prefixIcon: const Icon(Icons.search, color: AppColors.primary),
+                filled: true,
+                fillColor: AppColors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              style: const TextStyle(color: AppColors.text), // Ensure text is visible
             ),
             const SizedBox(height: 30),
 

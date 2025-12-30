@@ -12,7 +12,10 @@ import '../features/home/views/user_profile_page.dart';
 import '../features/home/views/searching_screen.dart';
 import 'package:flutter_application_1/features/home/views/search_results_page.dart';
 import '../features/chat/views/chat_screen.dart';
-import '../data/models/search_result.dart';
+import '../data/models/search_result.dart'; // FIX: Add this import
+import '../features/search/views/request_status_screen.dart';
+import '../features/home/views/request_details_screen.dart';
+import '../features/home/views/pharmacist_dashboard.dart';
 
 class AppRoutes {
   // 1. Define all route names (constants)
@@ -29,6 +32,8 @@ class AppRoutes {
   static const String chatScreen = '/chatScreen';
   static const String pharmacistHome = '/pharmacist_home';
   static const String pharmacistSignup = '/pharmacist_signup';
+  static const String requestDetails = '/request_details';
+  static const String requestStatus = '/request_status'; // Restore this
 
   // 2. Define the map that links route names to the widgets
   static Map<String, Widget Function(BuildContext)> routes = {
@@ -46,8 +51,16 @@ class AppRoutes {
     userHome: (context) => const UserHomePage(),
     userProfile: (context) => const UserProfilePage(),
     
-    // Pharmacist Placeholder (Add your actual pharmacist home widget here)
-    pharmacistHome: (context) => const Scaffold(body: Center(child: Text("Pharmacist Dashboard"))),
+    // Pharmacist Pages
+    pharmacistHome: (context) => const PharmacistDashboard(),
+    
+    requestDetails: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      if (args == null) {
+        return const PharmacistDashboard();
+      }
+      return RequestDetailsScreen(requestData: args);
+    },
 
     // Searching Screen
     searching: (context) {
@@ -86,5 +99,8 @@ class AppRoutes {
         partnerId: args['partnerId'] as String,
       );
     },
+    
+    // Request Status Screen
+    requestStatus: (context) => const RequestStatusScreen(),
   };
 }
