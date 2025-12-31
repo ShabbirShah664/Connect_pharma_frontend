@@ -1,5 +1,3 @@
-// lib/main.dart
-
 import 'package:flutter/material.dart';
 import 'routes/app_routes.dart';
 import 'theme/app_theme.dart'; 
@@ -18,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme, 
       
       // FIX 2: Use the 'intro' route
-      initialRoute: AppRoutes.intro, 
+      initialRoute: AppRoutes.initialRoute, 
       
       routes: AppRoutes.routes,
       debugShowCheckedModeBanner: false,

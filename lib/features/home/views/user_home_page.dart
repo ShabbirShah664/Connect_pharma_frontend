@@ -1,8 +1,8 @@
-// lib/features/home/views/user_home_page.dart
-
 import 'package:flutter/material.dart';
-import '../../../widgets/custom_form_fields.dart' as CustomWidgets; // FIX
-// ... (rest of imports)
+import 'package:image_picker/image_picker.dart';
+import '../../../widgets/custom_form_fields.dart' as CustomWidgets;
+import '../../../widgets/user_bottom_nav.dart';
+import '../../../routes/route_constants.dart';
 
 class UserHomePage extends StatefulWidget {
   const UserHomePage({super.key});
@@ -13,15 +13,17 @@ class UserHomePage extends StatefulWidget {
 
 class _UserHomePageState extends State<UserHomePage> {
   final TextEditingController _searchController = TextEditingController();
+  final ImagePicker _picker = ImagePicker();
 
-  // Placeholder for search logic
-  void _performSearch() {
-    if (_searchController.text.isNotEmpty) {
-      // Assuming you navigate to the searching screen
-      Navigator.pushNamed(
-        context,
-        '/searching', // Use the actual route constant if defined
-        arguments: {'medicineName': _searchController.text},
+  void _navigateToSearch() {
+    Navigator.pushNamed(context, RouteConstants.searching);
+  }
+
+  Future<void> _handleUploadPrescription() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Selected: ${image.name}. (Processing Upload...)')),
       );
     }
   }
@@ -29,37 +31,111 @@ class _UserHomePageState extends State<UserHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Home')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Welcome!', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 30),
-              
-              // FIX 24: Use CustomWidgets prefix
-              CustomWidgets.CustomTextField( 
-                controller: _searchController,
-                labelText: 'Search Medicine',
-                icon: Icons.search,
-                readOnly: true, // Typically readOnly for a tap-to-search interface
-                onTap: () {
-                  // Allow tap to search or navigate to a dedicated search page
-                  _performSearch();
-                },
-              ),
-              const SizedBox(height: 20),
-              
-              // FIX 25: Use CustomWidgets prefix
-              CustomWidgets.CustomButton( 
-                text: 'Locate Pharmacies',
-                onPressed: _performSearch,
-              ),
-            ],
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('CONNECT-PHARMA', 
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
+            onPressed: () {},
           ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            // Search Bar / Trigger
+            GestureDetector(
+              onTap: _navigateToSearch,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.search, color: Colors.grey),
+                    SizedBox(width: 10),
+                    Text('Search Medicine Nearby You', style: TextStyle(color: Colors.grey)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Action Buttons
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: _handleUploadPrescription,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF007BFF),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  elevation: 0,
+                ),
+                child: const Text('Upload Prescription', 
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {}, // Suggestions logic
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF007BFF),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  elevation: 0,
+                ),
+                child: const Text('Ask For Suggestions', 
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+              ),
+            ),
+            
+            const SizedBox(height: 30),
+            
+            // Helpful sections / Prompts
+            Container(
+              padding: const EdgeInsets.all(20),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Need Medicine Fast?', 
+                    style: TextStyle(color: Colors.blue.shade800, fontWeight: FontWeight.bold, fontSize: 18)),
+                  const SizedBox(height: 8),
+                  const Text('Search across multiple pharmacies instantly and get your medicine delivered to your doorstep.',
+                    style: TextStyle(color: Colors.black54)),
+                  const SizedBox(height: 15),
+                  TextButton(
+                    onPressed: _navigateToSearch,
+                    child: const Text('Locate Pharmacies Now ->', style: TextStyle(fontWeight: FontWeight.bold)),
+                  )
+                ],
+              ),
+            ),
+          ],
         ),
+      ),
+      bottomNavigationBar: UserBottomNav(
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 1) Navigator.pushNamed(context, RouteConstants.medicineAlarms);
+          if (index == 2) Navigator.pushNamed(context, RouteConstants.userProfile);
+        },
       ),
     );
   }

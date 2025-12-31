@@ -8,12 +8,10 @@
 // 3. Physical Device: Replace '10.0.2.2' with your computer's local IP address
 //    (e.g., http://192.168.1.XXX:3000/api).
 
-const String BASE_URL = 'http://10.0.2.2:3000/api';// lib/core/utils/api_constants.dart
-
 class ApiConstants {
   // 1. Base URL - Use 10.0.2.2 for Android Emulator, localhost for iOS/Web
   // Ensure there is NO trailing slash here to avoid // in your URLs
-  static const String BASE_URL = 'http://10.0.2.2:5000/api';
+  static const String BASE_URL = 'http://localhost:3000/api';
 
   // 2. Authentication Endpoints
   static const String AUTH_LOGIN = '/auth/login';

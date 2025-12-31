@@ -1,53 +1,110 @@
-// lib/features/auth/views/role_select_page.dart
 
 import 'package:flutter/material.dart';
-import '../../../routes/app_routes.dart';
+import '../../../theme/app_colors.dart';
+import '../../../routes/route_constants.dart';
 
-class RoleSelectionPage extends StatelessWidget { 
-  final bool isSignup;
-  const RoleSelectionPage({super.key, this.isSignup = true}); 
-
-  void _navigateToNext(BuildContext context, String role) {
-    // FIX 21, 22: Using the correct route names (signup and login)
-    final String nextRoute = isSignup ? AppRoutes.signup : AppRoutes.login; 
-    
-    Navigator.pushReplacementNamed(
-      context,
-      nextRoute,
-      arguments: role,
-    );
-  }
-
-  void _toggleMode(BuildContext context) {
-    // FIX 23: Using the correct route name (roleSelection)
-    Navigator.pushReplacementNamed(context, AppRoutes.roleSelection, arguments: !isSignup);
-  }
+class RoleSelectPage extends StatelessWidget {
+  const RoleSelectPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(isSignup ? 'Select Signup Role' : 'Select Login Role')),
-      body: Center(
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: () => _navigateToNext(context, 'User'),
-              child: const Text('I am a User'),
+            // Logo Section
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Icon(
+                  Icons.shield,
+                  size: 100,
+                  color: Colors.grey[200],
+                ),
+                 const Icon(
+                  Icons.add,
+                  size: 50,
+                  color: Color(0xFF007BFF), // Primary Blue
+                ),
+              ],
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _navigateToNext(context, 'Pharmacist'),
-              child: const Text('I am a Pharmacist'),
+            const Text(
+              'CONNECT-PHARMA',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF007BFF), // Primary Blue
+              ),
             ),
-            const SizedBox(height: 40),
-            TextButton(
-              onPressed: () => _toggleMode(context),
-              child: Text(isSignup 
-                ? 'Already have an account? Go to Login' 
-                : 'Need an account? Go to Signup'),
+            const SizedBox(height: 8),
+            const Text(
+              'Find Your Medicine Fast and Easy',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
             ),
+            const SizedBox(height: 50),
+            
+            // "Login As :"
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Login As :',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Role Buttons
+            _buildRoleButton(context, 'User'),
+            const SizedBox(height: 15),
+            _buildRoleButton(context, 'Pharmacist'),
+            const SizedBox(height: 15),
+            _buildRoleButton(context, 'Driver'),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRoleButton(BuildContext context, String role) {
+    return SizedBox(
+      width: double.infinity,
+      height: 55,
+      child: ElevatedButton(
+        onPressed: () {
+          if (role == 'Pharmacist') {
+            Navigator.pushNamed(context, RouteConstants.pharmacyLogin);
+          } else {
+            Navigator.pushNamed(
+              context, 
+              RouteConstants.userLogin, 
+              arguments: role
+            );
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF007BFF), // Primary Blue
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+        ),
+        child: Text(
+          role,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
         ),
       ),
     );

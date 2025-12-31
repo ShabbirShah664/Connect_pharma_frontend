@@ -5,11 +5,12 @@ import 'package:flutter_application_1/core/services/api_constants.dart';
 import 'package:flutter_application_1/data/models/medical_record_model.dart';
 import 'package:flutter_application_1/data/models/request_model.dart';
 import 'package:flutter_application_1/data/models/user_model.dart';
+
 class UserApiService {
   
   static Future<Map<String, dynamic>> loginUser(String email, String password) async {
     final response = await http.post(
-      Uri.parse('${ApiConstants.BASE_URL}${ApiConstants.AUTH_LOGIN}'),
+      Uri.parse('${ApiConstants.BASE_URL}/auth/User/login'),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -20,13 +21,30 @@ class UserApiService {
     );
 
     if (response.statusCode == 200) {
-      // Returns the body which typically looks like: 
-      // {"token": "eyJ...", "user": {"id": "123", "name": "John", ...}}
       return json.decode(response.body);
     } else {
-      // Attempt to get the error message from the backend response
       final errorData = json.decode(response.body);
-      throw Exception(errorData['message'] ?? 'Login failed. Please check your credentials.');
+      throw Exception(errorData['message'] ?? errorData['error'] ?? 'Login failed.');
+    }
+  }
+
+  static Future<void> registerUser(String name, String email, String password, String contactNumber) async {
+    final response = await http.post(
+      Uri.parse('${ApiConstants.BASE_URL}/auth/User/signup'), 
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'name': name,
+        'email': email,
+        'password': password,
+        'contactNumber': contactNumber,
+      }),
+    );
+
+    if (response.statusCode != 201) {
+      final errorData = json.decode(response.body);
+      throw Exception(errorData['error'] ?? 'Registration failed.');
     }
   }
   // 1. Fetch the logged-in user's profile data
@@ -103,6 +121,58 @@ class UserApiService {
         return jsonList.map((json) => RequestModel.fromJson(json)).toList();
     } else {
         throw Exception('Failed to fetch user requests history.');
+    }
+  }
+
+  // 6. Get status of a specific request
+  static Future<Map<String, dynamic>> getRequestStatus(String token, String requestId) async {
+    final response = await http.get(
+      Uri.parse('${ApiConstants.BASE_URL}/requests/$requestId/status'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to get request status.');
+    }
+  }
+
+  // 7. Expand search radius
+  static Future<void> expandRequestRadius(String token, String requestId) async {
+    final response = await http.post(
+      Uri.parse('${ApiConstants.BASE_URL}/requests/$requestId/expand'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+       throw Exception('Failed to expand radius.');
+    }
+  }
+
+  // 8. Broadcast a new request to nearby pharmacies
+  static Future<Map<String, dynamic>> broadcastRequest(String token, Map<String, dynamic> data) async {
+    final response = await http.post(
+      Uri.parse('${ApiConstants.BASE_URL}/requests/broadcast'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(data),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return json.decode(response.body);
+    } else {
+      final errorData = json.decode(response.body);
+      final errorMessage = errorData['error'] ?? errorData['message'] ?? 'Failed to broadcast request.';
+      throw Exception(errorMessage);
     }
   }
 }

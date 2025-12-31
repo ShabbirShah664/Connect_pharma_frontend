@@ -3,56 +3,50 @@
 class RequestModel {
   final String id;
   final String userId;
-  final String medicineDetails;
-  final String status; // 'pending', 'accepted', 'rejected'
-  final Map<String, dynamic> deliveryLocation;
-  final String? pharmacistId;
-  final double? estimatedPrice;
+  final String medicineName;
+  final String status; // 'SEARCHING', 'ACCEPTED', etc.
+  final Map<String, dynamic> userLocation;
+  final int radius;
+  final List<dynamic> responses;
   final DateTime? createdAt;
 
   RequestModel({
     required this.id,
     required this.userId,
-    required this.medicineDetails,
+    required this.medicineName,
     required this.status,
-    required this.deliveryLocation,
-    this.pharmacistId,
-    this.estimatedPrice,
+    required this.userLocation,
+    required this.radius,
+    required this.responses,
     this.createdAt,
   });
 
-  // Convert JSON from the Backend (Node.js API) to this Dart Model
   factory RequestModel.fromJson(Map<String, dynamic> json) {
     return RequestModel(
       id: json['id'] ?? '',
       userId: json['userId'] ?? '',
-      medicineDetails: json['medicineDetails'] ?? '',
+      medicineName: json['medicineName'] ?? json['medicineDetails'] ?? '',
       status: json['status'] ?? 'pending',
-      // Handles the nested location object { lat, lng, address }
-      deliveryLocation: json['deliveryLocation'] != null 
-          ? Map<String, dynamic>.from(json['deliveryLocation']) 
+      userLocation: json['userLocation'] != null 
+          ? Map<String, dynamic>.from(json['userLocation']) 
           : {},
-      pharmacistId: json['pharmacistId'],
-      // Handles price conversion safely from int or double
-      estimatedPrice: json['estimatedPrice'] != null 
-          ? (json['estimatedPrice'] as num).toDouble() 
-          : null,
+      radius: json['radius'] ?? 5,
+      responses: json['responses'] ?? [],
       createdAt: json['createdAt'] != null 
-          ? DateTime.parse(json['createdAt']) 
+          ? (json['createdAt'] is String ? DateTime.parse(json['createdAt']) : null)
           : null,
     );
   }
 
-  // Convert this Model to JSON (Useful if you send data back to the API)
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'userId': userId,
-      'medicineDetails': medicineDetails,
+      'medicineName': medicineName,
       'status': status,
-      'deliveryLocation': deliveryLocation,
-      'pharmacistId': pharmacistId,
-      'estimatedPrice': estimatedPrice,
+      'userLocation': userLocation,
+      'radius': radius,
+      'responses': responses,
     };
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/theme/app_colors.dart';
-import 'package:flutter_application_1/routes/app_routes.dart';
+import '../../../routes/route_constants.dart';
 import 'package:flutter_application_1/core/services/pharmacist_api_service.dart';
 import 'package:flutter_application_1/data/models/pharmacist.dart';
 
@@ -50,7 +50,7 @@ class _PharmacistLoginPageState extends State<PharmacistLoginPage> {
 
         // Navigate to the Pharmacist Dashboard
         Navigator.of(context).pushNamedAndRemoveUntil(
-          AppRoutes.pharmacistHome,
+          RouteConstants.pharmacistHome,
           (route) => false,
           arguments: pharmacist,
         );
@@ -149,7 +149,7 @@ class _PharmacistLoginPageState extends State<PharmacistLoginPage> {
 
               const SizedBox(height: 20),
               TextButton(
-                onPressed: () => Navigator.pushNamed(context, AppRoutes.pharmacistSignup),
+                onPressed: () => Navigator.pushNamed(context, RouteConstants.pharmacySignup),
                 child: const Text('Register a new pharmacy account'),
               ),
             ],

@@ -3,7 +3,7 @@
 // Base URL for your backend API
 // IMPORTANT: Replace 'http://your-backend-ip:3000' with your actual backend address.
 // Use 'http://10.0.2.2:3000' for Android Emulators if running locally, or your actual IP address.
-const String kBaseUrl = 'http://10.0.2.2:3000/api/v1.';
+const String kBaseUrl = 'http://localhost:3000/api';
 
 // Authentication endpoints
 const String kLoginEndpoint = '/auth/login';

@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../widgets/custom_buttons.dart';
 import '../../../widgets/custom_form_fields.dart';
-import '../../../routes/app_routes.dart';
+import '../../../routes/route_constants.dart';
 import '../../../theme/app_colors.dart';
 
-class SearchingScreen extends StatefulWidget {
-  const SearchingScreen({super.key});
+class LegacySearchingScreen extends StatefulWidget {
+  const LegacySearchingScreen({super.key});
 
   @override
-  State<SearchingScreen> createState() => _SearchingScreenState();
+  State<LegacySearchingScreen> createState() => _LegacySearchingScreenState();
 }
 
-class _SearchingScreenState extends State<SearchingScreen> {
+class _LegacySearchingScreenState extends State<LegacySearchingScreen> {
   final TextEditingController _medicineController = TextEditingController();
   String _currentLocation = 'Fetching location...'; // Placeholder
 
@@ -70,7 +70,7 @@ class _SearchingScreenState extends State<SearchingScreen> {
     print('Search initiated for: ${_medicineController.text} at $_currentLocation');
 
     // Placeholder: Navigate to results page instantly with mock data
-    Navigator.pushNamed(context, AppRoutes.searchResults);
+    Navigator.pushNamed(context, RouteConstants.responsePage); // Redirecting to the 'real' response page if possible, or searchResults if defined
   }
 
   @override
@@ -180,7 +180,7 @@ Widget _buildBottomNavBar(BuildContext context) {
     onTap: (index) {
       if (index == 0) return; // Already on Home
       if (index == 3) {
-        Navigator.pushNamed(context, AppRoutes.userProfile);
+        Navigator.pushNamed(context, RouteConstants.userProfile);
       }
       // Implement navigation for Tracker (1) and AI (2) when screens exist
     },

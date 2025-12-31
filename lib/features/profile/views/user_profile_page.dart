@@ -1,10 +1,6 @@
-// lib/features/profile/views/user_profile_page.dart
-
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../../routes/app_routes.dart';
-import '../../../theme/app_colors.dart';
-import '../../../widgets/custom_buttons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../routes/route_constants.dart';
 
 class UserProfilePage extends StatefulWidget {
   const UserProfilePage({super.key});
@@ -14,153 +10,237 @@ class UserProfilePage extends StatefulWidget {
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
-  // Mock User Data
-  String userName = "Syed Shabbir Hussain";
-  String userEmail = "syed.shabbir@email.com";
-  String userContact = "+92 300-1234567";
+  String _name = "Thomas K. Wilson";
+  String _phone = "(+44) 20 1234 5679";
+  String _email = "thomas.abc.inc@gmail.com";
 
-  // State for toggles (Mock)
-  bool pushNotificationsEnabled = true;
-  bool darkModeEnabled = false;
-  bool soundEnabled = true;
-
-  void _showLogoutConfirmation() {
-    showDialog(
+  Future<void> _handleLogout() async {
+    final bool? confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirm Logout'),
-        content: const Text('Are you sure you want to log out? You will be taken back to the Intro Page.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.primary)),
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.grey),
+                  onPressed: () => Navigator.pop(context, false),
+                ),
+              ),
+              const Text(
+                'Logout',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF8B4513)),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Are you sure you want to log out?',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: Colors.black54),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Cancel', style: TextStyle(color: Colors.grey, fontSize: 16)),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF007BFF),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        elevation: 0,
+                      ),
+                      child: const Text('Yes', style: TextStyle(color: Colors.white, fontSize: 16)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: _handleLogout,
-            child: const Text('Logout', style: TextStyle(color: AppColors.error)),
-          ),
-        ],
+        ),
       ),
     );
-  }
 
-  void _handleLogout() {
-    // --- AUTHENTICATION INTEGRATION POINT ---
-    // 1. Clear local session (JWT token or user preferences).
-    // 2. Clear state manager user data.
-    print('User logged out. Clearing session data...');
-
-    // Navigate to the Intro Page and remove all previous routes from the stack.
-    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.intro, (route) => false);
-  }
-
-  void _handleEditProfile() {
-    // Placeholder for showing a dialog or navigating to an edit screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Edit Profile functionality (Placeholder)')),
-    );
+    if (confirm == true) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear(); // Clear token and user data
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(context, RouteConstants.intro, (route) => false);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('My Account'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text('Profile', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.more_horiz, color: Colors.black),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Profile Header
-            CircleAvatar(
-              radius: 50,
-              backgroundColor: AppColors.primary.withOpacity(0.2),
-              child: const Icon(Icons.person, size: 60, color: AppColors.primary),
-            ),
             const SizedBox(height: 10),
-            Text(userName, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            Text(userEmail, style: TextStyle(fontSize: 16, color: AppColors.darkText.withOpacity(0.7))),
-            const SizedBox(height: 5),
-            Text(userContact, style: TextStyle(fontSize: 16, color: AppColors.darkText.withOpacity(0.7))),
-            const SizedBox(height: 20),
-
-            // Edit Button
-            SecondaryTextButton(
-              text: 'Edit Profile',
-              onPressed: _handleEditProfile,
+            // Header: User Info
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  const CircleAvatar(
+                    radius: 35,
+                    backgroundImage: NetworkImage('https://i.pravatar.cc/150?u=thomas'),
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(_name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF007BFF))),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(Icons.phone_outlined, size: 14, color: Colors.grey),
+                            const SizedBox(width: 4),
+                            Text(_phone, style: const TextStyle(color: Colors.grey, fontSize: 13)),
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Row(
+                          children: [
+                            const Icon(Icons.email_outlined, size: 14, color: Colors.grey),
+                            const SizedBox(width: 4),
+                            Text(_email, style: const TextStyle(color: Colors.grey, fontSize: 13)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  CircleAvatar(
+                    backgroundColor: const Color(0xFF007BFF),
+                    radius: 18,
+                    child: IconButton(
+                      icon: const Icon(Icons.edit, size: 16, color: Colors.white),
+                      onPressed: () {},
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const Divider(height: 30),
-
-            // Profile Options
-            _buildProfileOption(Icons.location_on, 'My Locations', () {}),
-            _buildProfileOption(Icons.message, 'Messages', () {
-              // Navigate to messages list
-            }),
-            _buildProfileOption(Icons.favorite, 'Favourite Pharmacies', () {}),
-            _buildProfileOption(FontAwesomeIcons.fileMedical, 'Medical Records', () {
-              // Navigation to records storage screen
-            }),
-            const Divider(height: 30),
-
-            // Settings Toggles
-            _buildSettingsToggle(
-              Icons.notifications_active,
-              'Push Notifications',
-              pushNotificationsEnabled,
-                  (val) => setState(() => pushNotificationsEnabled = val),
+            
+            const SizedBox(height: 25),
+            
+            // Menu Items
+            _buildMenuItem(Icons.location_on_outlined, 'My Locations'),
+            _buildMenuItem(Icons.card_giftcard_outlined, 'My Promotions'),
+            _buildMenuItem(Icons.chat_bubble_outline, 'Messages'),
+            _buildMenuItem(Icons.people_outline, 'Invite Friends'),
+            _buildMenuItem(Icons.security_outlined, 'Security'),
+            _buildMenuItem(Icons.help_outline, 'Help Center'),
+            
+            const SizedBox(height: 10),
+            
+            // Settings Mix-in
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  _buildSettingRow('Language', trailing: const Text('English v', style: TextStyle(color: Colors.grey))),
+                  _buildSwitchRow('Push Notification', true),
+                  _buildSwitchRow('Dark Mode', false),
+                  _buildSwitchRow('Sound', false),
+                  _buildSwitchRow('Automatically Updated', false),
+                  _buildSettingRow('Term of Service'),
+                ],
+              ),
             ),
-            _buildSettingsToggle(
-              Icons.brightness_6,
-              'Dark Mode',
-              darkModeEnabled,
-                  (val) => setState(() => darkModeEnabled = val),
-            ),
-            _buildSettingsToggle(
-              Icons.volume_up,
-              'Sound Effects',
-              soundEnabled,
-                  (val) => setState(() => soundEnabled = val),
-            ),
-
-            const Divider(height: 30),
-
-            // Terms of Service Link
-            _buildProfileOption(Icons.policy, 'Term of Service', () {}),
-
-            const SizedBox(height: 40),
-
+            
+            const SizedBox(height: 25),
+            
             // Logout Button
-            PrimaryButton(
-              text: 'LOGOUT',
-              onPressed: _showLogoutConfirmation,
-              color: AppColors.error,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton.icon(
+                  onPressed: _handleLogout,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF007BFF),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
+                  icon: const Icon(Icons.logout, color: Colors.white),
+                  label: const Text('Logout', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                ),
+              ),
             ),
+            const SizedBox(height: 40),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProfileOption(IconData icon, String title, VoidCallback onTap) {
+  Widget _buildMenuItem(IconData icon, String title) {
     return ListTile(
-      leading: Icon(icon, color: AppColors.primary),
-      title: Text(title, style: const TextStyle(fontSize: 16)),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-      onTap: onTap,
+      leading: Icon(icon, color: Colors.black54),
+      title: Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+      trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 25),
+      onTap: () {},
     );
   }
 
-  Widget _buildSettingsToggle(IconData icon, String title, bool value, ValueChanged<bool> onChanged) {
-    return ListTile(
-      leading: Icon(icon, color: AppColors.primary),
-      title: Text(title, style: const TextStyle(fontSize: 16)),
-      trailing: Switch(
-        value: value,
-        onChanged: onChanged,
-        activeColor: AppColors.primary,
+  Widget _buildSettingRow(String title, {Widget? trailing}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
+          trailing ?? const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+        ],
       ),
-      onTap: () => onChanged(!value),
+    );
+  }
+
+  Widget _buildSwitchRow(String title, bool val) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
+          Switch(
+            value: val,
+            onChanged: (v) {},
+            activeColor: const Color(0xFF007BFF),
+          ),
+        ],
+      ),
     );
   }
 }

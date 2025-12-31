@@ -1,7 +1,7 @@
 // lib/features/search/views/search_results_page.dart
 
 import 'package:flutter/material.dart';
-import '../../../routes/app_routes.dart';
+import '../../../routes/route_constants.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/custom_buttons.dart';
 import '../../../features/chat/views/chat_screen.dart';
@@ -76,7 +76,7 @@ class SearchResultsPage extends StatelessWidget {
                   isLimited: result['limited'],
                   onContact: () {
                     // Pass pharmacy name to chat screen
-                    Navigator.pushNamed(context, AppRoutes.chatScreen, arguments: {'pharmacistName': result['name']});
+                    // Navigator.pushNamed(context, '/chat', arguments: {'pharmacistName': result['name']});
                   },
                   onDeliver: () {
                     // Placeholder for initiating delivery
